@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitzyouth - AI-Powered Sports Talent Assessment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #facc15;
+            --danger: #f87171;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --text: #1e293b;
+            --background: #f1f5f9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 16px;
+            font-family: 'Open Sans', sans-serif;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        
+        nav a:hover, nav a:focus {
+            color: var(--accent);
+            background-color: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: #3ab7db;
+            transform: translateY(-2px);
+            outline: none;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover, .btn-outline:focus {
+            background-color: white;
+            color: var(--primary);
+            outline: none;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><path fill="%233a0ca3" fill-opacity="0.2" d="M0 192L26.7 202.7C53.3 213 107 235 160 234.7C213.3 235 267 213 320 197.3C373.3 181 427 171 480 186.7C533.3 203 587 245 640 250.7C693.3 256 747 224 773.3 208L800 192L800 401L773.3 401C746.7 401 693 401 640 401C586.7 401 533 401 480 401C426.7 401 373 401 320 401C266.7 401 213 401 160 401C106.7 401 53 401 27 401L0 401Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.2rem;
+            color: var(--secondary);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            background-color: var(--primary);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        /* Assessment Tests Section */
+        .assessment-tests {
+            padding: 80px 0;
+            background-color: var(--light);
+        }
+        
+        .tests-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .test-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .test-content {
+            padding: 25px;
+        }
+        
+        .test-content h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .test-steps {
+            list-style: none;
+            margin: 15px 0;
+        }
+        
+        .test-steps li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-steps i {
+            color: var(--accent);
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 0;
+        }
+        
+        .process-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .process-step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        
+        /* Leaderboard Section */
+        .leaderboard {
+            padding: 80px 0;
+            background-color: var(--light);
+        }
+        
+        .leaderboard-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .leaderboard-filters {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .leaderboard-list {
+            list-style: none;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            width: 50px;
+            text-align: center;
+            color: var(--secondary);
+        }
+        
+        .leaderboard-user {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 15px;
+        }
+        
+        .leaderboard-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .leaderboard-score {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        /* Demo Section */
+        .demo {
+            padding: 80px 0;
+        }
+        
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .demo-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .demo-features {
+            list-style: none;
+            margin: 30px 0;
+        }
+        
+        .demo-features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .demo-features i {
+            color: var(--accent);
+        }
+        
+        .demo-video {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .video-placeholder {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            height: 300px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5rem;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 80px 0;
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column a:hover, .footer-column a:focus {
+            color: var(--accent);
+            outline: none;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover, .social-icons a:focus {
+            background-color: var(--accent);
+            transform: translateY(-3px);
+            outline: none;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-running" aria-hidden="true"></i>
+                <span>Fitzyouth</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Tests</a></li>
+                    <li><a href="#">Leaderboard</a></li>
+                    <li><a href="#">How It Works</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <button class="btn btn-outline">Log In</button>
+                <button class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>AI-Powered Sports Talent Assessment</h1>
+            <p>Fitzyouth enables athletes to record performance videos, uses AI to verify authenticity, and provides benchmarking against national standards - all from your smartphone.</p>
+            <button class="btn btn-primary">Download App</button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Innovative Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot" aria-hidden="true"></i>
+                    </div>
+                    <h3>AI-Based Cheat Detection</h3>
+                    <p>Identify anomalies or manipulations in performance videos to ensure fair assessments and maintain integrity.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-wifi-slash" aria-hidden="true"></i>
+                    </div>
+                    <h3>Offline Video Analysis</h3>
+                    <p>Perform preliminary performance analysis directly on the device without requiring continuous internet connectivity.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i>
+                    </div>
+                    <h3>Performance Benchmarking</h3>
+                    <p>Compare athlete performance against age and gender-based benchmarks, providing instant feedback.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gamepad" aria-hidden="true"></i>
+                    </div>
+                    <h3>Gamified Interface</h3>
+                    <p>Progress badges, leaderboards, and interactive visuals to engage athletes and encourage participation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-video" aria-hidden="true"></i>
+                    </div>
+                    <h3>Auto-Test Segmentation</h3>
+                    <p>Automatically detect and segment performance clips to reduce manual effort and improve accuracy.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                    </div>
+                    <h3>Secure Data Transmission</h3>
+                    <p>Encrypted data transfer to SAI servers for further processing and athlete profiling.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assessment Tests Section -->
+    <section class="assessment-tests">
+        <div class="container">
+            <h2 class="section-title">Fitness Assessment Tests</h2>
+            <div class="tests-container">
+                <div class="test-card">
+                    <div class="test-image">
+                        <i class="fas fa-running" aria-hidden="true"></i>
+                    </div>
+                    <div class="test-content">
+                        <h3>40m Sprint Test</h3>
+                        <p>Measure acceleration and speed with AI-powered time tracking.</p>
+                        <ul class="test-steps">
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Record your sprint</li>
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> AI analyzes form and time</li>
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Get instant results</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="test-card">
+                    <div class="test-image">
+                        <i class="fas fa-arrows-alt-v" aria-hidden="true"></i>
+                    </div>
+                    <div class="test-content">
+                        <h3>Vertical Jump Test</h3>
+                        <p>Assess lower body power and explosive strength.</p>
+                        <ul class="test-steps">
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Record your jump</li>
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> AI measures height</li>
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Compare to benchmarks</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="test-card">
+                    <div class="test-image">
+                        <i class="fas fa-redo" aria-hidden="true"></i>
+                    </div>
+                    <div class="test-content">
+                        <h3>Sit-Up Test</h3>
+                        <p>Evaluate core strength and endurance with rep counting AI.</p>
+                        <ul class="test-steps">
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Record your sit-ups</li>
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> AI counts repetitions</li>
+                            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Check form correctness</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How Fitzyouth Works</h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3>Download & Record</h3>
+                    <p>Download the app and record videos of your performance in the prescribed fitness assessment tests.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3>AI Verification</h3>
+                    <p>Our AI analyzes your videos for accuracy, authenticity, and detects any anomalies or manipulations.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3>Submit Results</h3>
+                    <p>Securely submit your verified data to SAI servers for further evaluation and athlete profiling.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3>Track Progress</h3>
+                    <p>Compare your performance against benchmarks and track your improvement over time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="leaderboard">
+        <div class="container">
+            <h2 class="section-title">National Leaderboard</h2>
+            <div class="leaderboard-container">
+                <div class="leaderboard-header">
+                    <h3>Top Performers This Month</h3>
+                    <div class="leaderboard-filters">
+                        <button class="btn btn-primary">Overall</button>
+                        <button class="btn btn-outline">Under 18</button>
+                        <button class="btn btn-outline">Under 16</button>
+                    </div>
+                </div>
+                <ul class="leaderboard-list">
+                    <li class="leaderboard-item">
+                        <div class="leaderboard-rank">1</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-avatar">RJ</div>
+                            <div>
+                                <div>Rahul Joshi</div>
+                                <div>Mumbai, Maharashtra</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">9,850 pts</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="leaderboard-rank">2</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-avatar">PM</div>
+                            <div>
+                                <div>Priya Mehta</div>
+                                <div>Delhi, NCR</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">9,420 pts</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="leaderboard-rank">3</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-avatar">AK</div>
+                            <div>
+                                <div>Amit Kumar</div>
+                                <div>Patna, Bihar</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">9,150 pts</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="leaderboard-rank">4</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-avatar">SM</div>
+                            <div>
+                                <div>Sunita Mishra</div>
+                                <div>Bhubaneswar, Odisha</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">8,970 pts</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="leaderboard-rank">5</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-avatar">RS</div>
+                            <div>
+                                <div>Rohit Sharma</div>
+                                <div>Chandigarh, Punjab</div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">8,750 pts</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo">
+        <div class="container demo-container">
+            <div class="demo-content">
+                <h2>See Fitzyouth in Action</h2>
+                <p>Our AI technology analyzes athletic performance with precision, even on entry-level smartphones and low-bandwidth networks.</p>
+                <ul class="demo-features">
+                    <li><i class="fas fa-check-circle" aria-hidden="true"></i> Works offline with on-device processing</li>
+                    <li><i class="fas fa-check-circle" aria-hidden="true"></i> Low-cost and lightweight solution</li>
+                    <li><i class="fas fa-check-circle" aria-hidden="true"></i> Accessible even in remote areas</li>
+                    <li><i class="fas fa-check-circle" aria-hidden="true"></i> Democratizes sports talent assessment</li>
+                </ul>
+                <button class="btn btn-primary">Request a Demo</button>
+            </div>
+            <div class="demo-video">
+                <div class="video-placeholder">
+                    <i class="fas fa-play-circle" aria-hidden="true"></i>
+                </div>
+                <p class="video-caption" style="text-align: center; margin-top: 15px;">See how our AI analyzes a vertical jump test</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Discover Your Potential?</h2>
+            <p>Join thousands of athletes across India who are using Fitzyouth to showcase their talent and get recognized.</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary">Download for Android</button>
+                <button class="btn btn-outline">Download for iOS</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Fitzyouth</h3>
+                    <p>AI-powered sports talent assessment platform in partnership with Sports Authority of India.</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Assessment Tests</a></li>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Data Security</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <p>Sports Authority of India<br>Jawaharlal Nehru Stadium<br>New Delhi, India</p>
+                    <p>Email: info@fitzyouth.in<br>Phone: +91 11 1234 5678</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Fitzyouth. Developed in partnership with Sports Authority of India. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple animation for elements when they come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.feature-card, .test-card, .process-step');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animatedElements.forEach(element => {
+                element.style.opacity = 0;
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(element);
+            });
+            
+            // Leaderboard filter buttons
+            const filterButtons = document.querySelectorAll('.leaderboard-filters .btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('btn-primary'));
+                    filterButtons.forEach(btn => btn.classList.add('btn-outline'));
+                    button.classList.remove('btn-outline');
+                    button.classList.add('btn-primary');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
